@@ -23,13 +23,13 @@ public class PawnSingleFlyer : MonoBehaviour
         IdleState idleState = new IdleState(transform, idleTime);
         PatrolState patrolState = new PatrolState(transform, partrolSpeed, patrolWaypoints);
 
+        Func<bool> FinishedIdling() => () => idleState.IdleTimeExpired();
         At(idleState, patrolState, FinishedIdling());
+
+        Func<bool> FinishedPatrolling() => () => patrolState.PatrolFinished();
         At(patrolState, idleState, FinishedPatrolling());
         
         _stateMachine.SetState(idleState);
-        
-        Func<bool> FinishedIdling() => () => idleState.IdleTimeExpired();
-        Func<bool> FinishedPatrolling() => () => patrolState.PatrolFinished();
     }
 
     public void Update()
