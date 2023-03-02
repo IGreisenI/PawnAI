@@ -5,11 +5,17 @@ using UnityEngine;
 
 public class PawnSingleFlyer : MonoBehaviour
 {
-    [SerializeField] private float idleTime;
+    [Header("Flight settings")]
     [SerializeField] private float partrolSpeed;
+    [SerializeField] private float noiseFrequency;
+    [SerializeField] private float noiseMagnitude;
+
+    [Header("State settings")]
+    [SerializeField] private float idleTime;
     [SerializeField] private Transform[] patrolWaypoints;
 
     private StateMachine _stateMachine;
+    private FlyerPawnMovement flyerPawnMovement;
 
     void At(IState to, IState from, Func<bool> condition)
     {
@@ -20,8 +26,10 @@ public class PawnSingleFlyer : MonoBehaviour
     {
         _stateMachine = new StateMachine();
 
+        flyerPawnMovement = new FlyerPawnMovement(transform, noiseFrequency, noiseMagnitude);
+
         IdleState idleState = new IdleState(transform, idleTime);
-        PatrolState patrolState = new PatrolState(transform, partrolSpeed, patrolWaypoints);
+        PatrolState patrolState = new PatrolState(transform, flyerPawnMovement, patrolWaypoints, partrolSpeed);
 
         Func<bool> FinishedIdling() => () => idleState.IdleTimeExpired();
         At(idleState, patrolState, FinishedIdling());
