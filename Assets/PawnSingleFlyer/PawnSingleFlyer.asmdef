@@ -1,3 +1,16 @@
 {
-	"name": "PawnSingleFlyer"
+    "name": "PawnSingleFlyer",
+    "rootNamespace": "",
+    "references": [
+        "GUID:366f784cf0f448c4eb4d55b78662bf23"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
