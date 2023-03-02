@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Movement : MonoBehaviour
+public abstract class Movement
 {
-    public abstract void Move(Vector3 position, float speed, float rotationSpeed);
+    public abstract void Move(Transform target, float speed, float rotationSpeed);
 }
