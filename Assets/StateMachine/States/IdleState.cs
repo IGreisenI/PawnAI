@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class IdleState : IState
 {
-    private readonly Transform _transform;
-    private readonly float _idleTime; 
-    private float _elapsedTime;
+    private Transform _transform;
+    private float _idleTime; 
+    private float _elapsedTime = 0f;
 
     public IdleState(Transform transform, float idleTime)
     {
@@ -18,14 +18,6 @@ public class IdleState : IState
     {
         // Update the elapsed time since entering the idle state
         _elapsedTime += Time.deltaTime;
-
-        // Check if the idle time has elapsed
-        if (_elapsedTime >= _idleTime)
-        {
-            // If the idle time has elapsed, transition to a new state (e.g. "Patrol" state)
-            var stateMachine = _transform.GetComponent<StateMachine>();
-            stateMachine.SetState(new PatrolState(_transform));
-        }
     }
 
     public void OnEnter()
@@ -43,5 +35,10 @@ public class IdleState : IState
     public void OnExit()
     {
         // When exiting the idle state, do nothing
+    }
+
+    public bool IdleTimeExpired()
+    {
+        return _elapsedTime >= _idleTime;
     }
 }
