@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class PatrolState : IState
 {
-    private readonly Transform _transform;
-    private readonly float _patrolSpeed;
-    private readonly Vector3[] _waypoints;
+    private float _patrolSpeed;
+    private Transform _transform;
+    private Transform[] _waypoints;
     private int _currentWaypointIndex;
-    private bool _isPatrollingForward = true;
+    private bool _isPatrollingForward;
 
-    public PatrolState(Transform transform, float patrolSpeed, Vector3[] waypoints)
+    public PatrolState(Transform transform, float patrolSpeed, Transform[] waypoints)
     {
         _transform = transform;
         _patrolSpeed = patrolSpeed;
@@ -18,12 +18,13 @@ public class PatrolState : IState
 
         // Set the initial waypoint to patrol towards
         _currentWaypointIndex = _isPatrollingForward ? 0 : _waypoints.Length - 1;
+        _isPatrollingForward = true;
     }
 
     public void Tick()
     {
         // Get the direction towards the current waypoint
-        var direction = (_waypoints[_currentWaypointIndex] - _transform.position).normalized;
+        var direction = (_waypoints[_currentWaypointIndex].position - _transform.position).normalized;
 
         // Update the AI's velocity to move in the direction of the current waypoint at the patrol speed
         var rigidbody = _transform.GetComponent<Rigidbody>();
@@ -33,7 +34,7 @@ public class PatrolState : IState
         _transform.forward = direction;
 
         // Check if the AI has reached the current waypoint
-        var distanceToWaypoint = Vector3.Distance(_transform.position, _waypoints[_currentWaypointIndex]);
+        var distanceToWaypoint = Vector3.Distance(_transform.position, _waypoints[_currentWaypointIndex].position);
         if (distanceToWaypoint <= 0.5f)
         {
             // If the AI has reached the current waypoint, switch to the next waypoint
@@ -50,12 +51,6 @@ public class PatrolState : IState
             else
             {
                 _currentWaypointIndex--;
-                if (_currentWaypointIndex < 0)
-                {
-                    // If the AI has reached the beginning of the list of waypoints, start patrolling forward
-                    _isPatrollingForward = true;
-                    _currentWaypointIndex = 1;
-                }
             }
         }
     }
@@ -64,13 +59,20 @@ public class PatrolState : IState
     {
         // When entering the patrol state, set the initial waypoint to patrol towards
         _currentWaypointIndex = _isPatrollingForward ? 0 : _waypoints.Length - 1;
+        _isPatrollingForward = true;
     }
 
     public void OnExit()
     {
+        
         // When exiting the patrol state, stop the AI from moving
         var rigidbody = _transform.GetComponent<Rigidbody>();
         rigidbody.velocity = Vector3.zero;
         rigidbody.angularVelocity = Vector3.zero;
+    }
+
+    public bool PatrolFinished()
+    {
+        return _currentWaypointIndex < 0;
     }
 }
