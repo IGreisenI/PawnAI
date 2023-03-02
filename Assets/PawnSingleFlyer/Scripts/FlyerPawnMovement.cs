@@ -19,27 +19,13 @@ public class FlyerPawnMovement : Movement
 
     public override void Move(Transform target, float speed, float rotationSpeed)
     {
-        Vector3 direction = target.position - transform.position;
-        float distance = direction.magnitude;
-
-        if (distance > navMeshDistanceThreshold)
-        {
-            // Use raycast to check for obstacles
-            RaycastHit hit;
-            if (Physics.Raycast(transform.position, direction, out hit, distance, ~navMeshLayer))
-            {
-                // If obstacle detected, move towards the hit point instead
-                target.position = hit.point;
-                direction = hit.point - transform.position;
-            }
-        }
-
         // Add perlin noise to movement
         float noise = Mathf.PerlinNoise(Time.time * noiseFrequency, transform.position.y) * 2f - 1f;
-        direction += transform.right * noise * noiseMagnitude;
+        Vector3 noiseVector = transform.up * noise * noiseMagnitude + transform.right * noise * noiseMagnitude;
+        Vector3 direction = (target.position - transform.position).normalized;
+        Vector3 newPosition = transform.position + (direction + noiseVector) * speed * Time.deltaTime;
 
         // Move towards the target position
-        Vector3 newPosition = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
         transform.position = newPosition;
 
         // Rotate towards the target position
