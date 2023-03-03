@@ -10,15 +10,15 @@ public class PatrolState : IState
     private bool _isPatrollingForward;
 
     private Movement _movement;
-    private float _patrolSpeed;
+    private Vector3 _startingPoint;
+    private Vector3 from;
 
-    public PatrolState(Transform transform, Movement movement, Transform[] waypoints, float patrolSpeed)
+    public PatrolState(Transform transform, Movement movement, Transform[] waypoints)
     {
         _transform = transform;
         _waypoints = waypoints;
 
         _movement = movement;
-        _patrolSpeed = patrolSpeed;
 
         // Set the initial waypoint to patrol towards
         _currentWaypointIndex = _isPatrollingForward ? 0 : _waypoints.Length - 1;
@@ -27,19 +27,17 @@ public class PatrolState : IState
 
     public void Tick()
     {
-        // Get the direction towards the current waypoint
-        var direction = (_waypoints[_currentWaypointIndex].position - _transform.position).normalized;
-
         // Use the FlyerPawnMovement instance to move towards the current waypoint
-        _movement.Move(_waypoints[_currentWaypointIndex], _patrolSpeed, 180f);
+        _movement.Move(from, _waypoints[_currentWaypointIndex].position);
 
         // Check if the AI has reached the current waypoint
-        var distanceToWaypoint = Vector3.Distance(_transform.position, _waypoints[_currentWaypointIndex].position);
+        float distanceToWaypoint = Vector3.Distance(_transform.position, _waypoints[_currentWaypointIndex].position);
         if (distanceToWaypoint <= 0.5f)
         {
             // If the AI has reached the current waypoint, switch to the next waypoint
             if (_isPatrollingForward)
             {
+                from = _waypoints[_currentWaypointIndex].position;
                 _currentWaypointIndex++;
                 if (_currentWaypointIndex >= _waypoints.Length)
                 {
@@ -50,6 +48,7 @@ public class PatrolState : IState
             }
             else
             {
+                from = _waypoints[_currentWaypointIndex].position;
                 _currentWaypointIndex--;
             }
         }
@@ -60,6 +59,8 @@ public class PatrolState : IState
         // When entering the patrol state, set the initial waypoint to patrol towards
         _currentWaypointIndex = _isPatrollingForward ? 0 : _waypoints.Length - 1;
         _isPatrollingForward = true;
+        _startingPoint = _transform.position;
+        from = _startingPoint;
     }
 
     public void OnExit()
@@ -68,6 +69,21 @@ public class PatrolState : IState
         var rigidbody = _transform.GetComponent<Rigidbody>();
         rigidbody.velocity = Vector3.zero;
         rigidbody.angularVelocity = Vector3.zero;
+    }
+
+    public void DrawDebugGizmo()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(from, _waypoints[_currentWaypointIndex].position);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(_transform.position, _waypoints[_currentWaypointIndex].position);
+
+        Gizmos.color = Color.white;
+        foreach (Transform point in _waypoints)
+        {
+            Gizmos.DrawSphere(point.position, 0.1f);
+        }
     }
 
     public bool PatrolFinished()
