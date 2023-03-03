@@ -49,6 +49,11 @@ public class StateMachine
         _currentState.OnEnter();
     }
 
+    public void DrawStateGizmo()
+    {
+        _currentState.DrawDebugGizmo();
+    }
+
     public void AddTransition(IState from, IState to, Func<bool> predicate)
     {
         // If there are no existing transitions for the starting state, create a new list of transitions
