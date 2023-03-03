@@ -4,5 +4,5 @@ using UnityEngine;
 
 public abstract class Movement
 {
-    public abstract void Move(Transform target, float speed, float rotationSpeed);
+    public abstract void Move(Vector3 from, Vector3 to);
 }
