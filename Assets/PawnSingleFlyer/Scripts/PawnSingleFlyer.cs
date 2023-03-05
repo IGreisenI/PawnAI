@@ -42,16 +42,19 @@ public class PawnSingleFlyer : MonoBehaviour
         flyerPawnMovement = new FlyerPawnMovement(transform, flyerSpeed, flyerRotation, noiseFrequency, noiseMagnitude);
 
         _idle = new IdleState(transform, idleTime);
-        _patrol = new PatrolState(transform, flyerPawnMovement, patrolWaypoints);
+        _patrol = new PatrolState(transform, model, flyerPawnMovement, patrolWaypoints);
         _returnToTarget = new ReturnToTargetState(transform, returnTarget, flyerPawnMovement);
         _focusOnTarget = new FocusTargetState(transform, model, returnTarget, flyerPawnMovement);
         _flyForEffect = new FlyForEffectState(transform, model, returnTarget, null, flyerPawnMovement, flyForEffectTime);
 
-        At(_idle, _patrol, _idle.IdleTimeExpired);
+        At(_idle, _flyForEffect, _idle.IdleTimeExpired);
+        //At(_idle, _patrol, _idle.IdleTimeExpired);
         At(_patrol, _idle, _patrol.PatrolFinished);
-        At(_flyForEffect, _idle, _flyForEffect.FlightTimeExpired);
 
-        _stateMachine.SetState(_idle);
+        At(_flyForEffect, _returnToTarget, _flyForEffect.FlightTimeExpired);
+        At(_returnToTarget, _idle, _returnToTarget.ReturnedToTarget);
+
+        _stateMachine.SetState(_returnToTarget);
     }
 
     public void Update()
@@ -63,6 +66,8 @@ public class PawnSingleFlyer : MonoBehaviour
     {
         if(_stateMachine != null)
             _stateMachine.DrawStateGizmo();
+        if (flyerPawnMovement != null)
+            flyerPawnMovement.DebugGizmo();
     }
 
     [ContextMenu("ReturnToTarget")]
