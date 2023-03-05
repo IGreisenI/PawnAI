@@ -12,6 +12,8 @@ public class FlyForEffectState : IState
     private float _flightTime;
     private float _elapsedTime = 0f;
 
+    private Vector3 _targetOffset;
+
     public FlyForEffectState(Transform transform, Transform model, Transform target, Transform focusTarget, Movement movement, float flightTime)
     {
         _transform = transform;
@@ -35,9 +37,9 @@ public class FlyForEffectState : IState
     {
         _elapsedTime += Time.deltaTime;
 
-        Vector3 targetOffset = _target.position + _target.forward + _target.up * 0.2f;
+        _targetOffset = _target.position + _target.forward * 2f + _target.up;
 
-        _movement.Move(_transform.position, targetOffset);
+        _movement.Move(_transform.position, _targetOffset);
 
         if (_focusTarget != null)
         {
@@ -47,7 +49,14 @@ public class FlyForEffectState : IState
 
     public void DrawDebugGizmo()
     {
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(_transform.position, _targetOffset);
 
+        Gizmos.color = Color.cyan;
+        if (_focusTarget != null)
+        {
+            Gizmos.DrawLine(_transform.position, _focusTarget.position);
+        }
     }
 
     public bool FlightTimeExpired()
