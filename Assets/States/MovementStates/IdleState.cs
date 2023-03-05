@@ -20,6 +20,7 @@ public class IdleState : IState
     {
         // Update the elapsed time since entering the idle state
         _elapsedTime += Time.deltaTime;
+        _transform.rotation = Quaternion.Slerp(_transform.rotation, Quaternion.identity, Time.deltaTime); ;
     }
 
     public void OnEnter()
@@ -28,7 +29,6 @@ public class IdleState : IState
         var rigidbody = _transform.GetComponent<Rigidbody>();
         rigidbody.velocity = Vector3.zero;
         rigidbody.angularVelocity = Vector3.zero;
-        _transform.forward = Vector3.forward;
 
         // Reset the elapsed time since entering the idle state
         _elapsedTime = 0f;
