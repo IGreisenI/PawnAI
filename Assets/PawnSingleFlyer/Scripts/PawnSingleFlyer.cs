@@ -16,7 +16,7 @@ public class PawnSingleFlyer : MonoBehaviour
     [Header("State settings")]
     [SerializeField] private float idleTime;
     [SerializeField] private float flyForEffectTime;
-    [SerializeField] private Transform returnTarget;
+    [SerializeField] private GameObject returnTarget;
     [SerializeField] private Transform[] patrolWaypoints;
 
     private StateMachine _stateMachine;
@@ -35,7 +35,7 @@ public class PawnSingleFlyer : MonoBehaviour
         _stateMachine.AddTransition(from, to, condition);
     }
 
-    private void Awake()
+    private void Start()
     {
         _stateMachine = new StateMachine();
 
@@ -43,9 +43,9 @@ public class PawnSingleFlyer : MonoBehaviour
 
         _idle = new IdleState(transform, idleTime);
         _patrol = new PatrolState(transform, model, flyerPawnMovement, patrolWaypoints);
-        _returnToTarget = new ReturnToTargetState(transform, returnTarget, flyerPawnMovement);
-        _focusOnTarget = new FocusTargetState(transform, model, returnTarget, flyerPawnMovement);
-        _flyForEffect = new FlyForEffectState(transform, model, returnTarget, null, flyerPawnMovement, flyForEffectTime);
+        _returnToTarget = new ReturnToTargetState(transform, returnTarget.gameObject, flyerPawnMovement);
+        _focusOnTarget = new FocusTargetState(transform, model, returnTarget.transform, flyerPawnMovement);
+        _flyForEffect = new FlyForEffectState(transform, model, returnTarget.transform, null, flyerPawnMovement, flyForEffectTime);
 
         At(_idle, _flyForEffect, _idle.IdleTimeExpired);
         //At(_idle, _patrol, _idle.IdleTimeExpired);
@@ -54,11 +54,12 @@ public class PawnSingleFlyer : MonoBehaviour
         At(_flyForEffect, _returnToTarget, _flyForEffect.FlightTimeExpired);
         At(_returnToTarget, _idle, _returnToTarget.ReturnedToTarget);
 
-        _stateMachine.SetState(_returnToTarget);
+        _stateMachine.SetState(_idle);
     }
 
     public void Update()
     {
+        Debug.Log(returnTarget.transform.position);
         _stateMachine.Tick();
     }
 
@@ -92,5 +93,11 @@ public class PawnSingleFlyer : MonoBehaviour
     public void Idle()
     {
         _stateMachine.SetState(_idle);
+    }
+
+    [ContextMenu("Patrol")]
+    public void Patrol()
+    {
+        _stateMachine.SetState(_patrol);
     }
 }
