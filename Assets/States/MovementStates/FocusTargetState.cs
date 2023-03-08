@@ -21,7 +21,7 @@ public class FocusTargetState : IState
 
     public void OnEnter()
     {
-        randomPositionAroundTarget = Random.onUnitSphere * 5;
+        randomPositionAroundTarget = FindNewPointOnSphere(Random.onUnitSphere * 5);
     }
 
     public void OnExit()
@@ -34,7 +34,7 @@ public class FocusTargetState : IState
         if (Vector3.Distance(_transform.position, _target.position + randomPositionAroundTarget) <= 0.2f)
         {
             // Find next point on the sphere that is 0f-2f distance from last point
-            randomPositionAroundTarget = (randomPositionAroundTarget + Random.onUnitSphere * 2).normalized * 5;
+            randomPositionAroundTarget = FindNewPointOnSphere(randomPositionAroundTarget);
         }
 
         _movement.Move(_transform.position, _target.position + randomPositionAroundTarget);
@@ -51,5 +51,18 @@ public class FocusTargetState : IState
 
         Gizmos.color = Color.blue;
         Gizmos.DrawLine(_transform.position, _target.position + randomPositionAroundTarget);
+    }
+
+    private Vector3 FindNewPointOnSphere(Vector3 prevPoint)
+    {
+        prevPoint = (prevPoint + Random.onUnitSphere * 2).normalized * 5;
+
+        Ray ray = new Ray(_transform.position, ((_target.position + prevPoint) - _transform.position).normalized);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, ((_target.position + prevPoint) - _transform.position).magnitude))
+        {
+            return FindNewPointOnSphere(prevPoint);
+        }
+        return prevPoint;
     }
 }
