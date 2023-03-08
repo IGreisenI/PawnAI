@@ -75,6 +75,8 @@ public class PatrolState : IState
 
     public void DrawDebugGizmo()
     {
+        if (PatrolFinished()) return;
+
         Gizmos.color = Color.red;
         Gizmos.DrawLine(from, _waypoints[_currentWaypointIndex].position);
 
