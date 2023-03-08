@@ -5,12 +5,12 @@ using UnityEngine;
 public class ReturnToTargetState : IState
 {
     private Transform _transform;
-    private Transform _target;
+    private GameObject _target;
     private Movement _movement;
 
     private Vector3 offsetPos = Vector3.zero;
 
-    public ReturnToTargetState(Transform transform, Transform target, Movement movement)
+    public ReturnToTargetState(Transform transform, GameObject target, Movement movement)
     {
         _transform = transform;
         _target = target;
@@ -27,7 +27,7 @@ public class ReturnToTargetState : IState
 
     public void Tick()
     {
-        offsetPos = _target.position - _target.forward * 2f + _target.up;
+        offsetPos = _target.transform.position - _target.transform.forward * 2f + _target.transform.up;
 
         _movement.Move(_transform.position, offsetPos);
     }
