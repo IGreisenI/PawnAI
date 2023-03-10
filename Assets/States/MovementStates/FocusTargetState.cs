@@ -31,7 +31,7 @@ public class FocusTargetState : IState
 
     public void Tick()
     {
-        if (Vector3.Distance(_transform.position, _target.position + randomPositionAroundTarget) <= 0.2f)
+        if (Vector3.Distance(_transform.position, _target.position + randomPositionAroundTarget) <= 0.5f)
         {
             // Find next point on the sphere that is 0f-2f distance from last point
             randomPositionAroundTarget = FindNewPointOnSphere(randomPositionAroundTarget);
@@ -55,7 +55,7 @@ public class FocusTargetState : IState
 
     private Vector3 FindNewPointOnSphere(Vector3 prevPoint)
     {
-        prevPoint = (prevPoint + Random.onUnitSphere * 2).normalized * 5;
+        prevPoint = (prevPoint + Random.onUnitSphere * 2f).normalized * 5f;
 
         Ray ray = new Ray(_transform.position, ((_target.position + prevPoint) - _transform.position).normalized);
         RaycastHit hit;

@@ -9,6 +9,7 @@ public class ReturnToTargetState : IState
     private Movement _movement;
 
     private Vector3 offsetPos = Vector3.zero;
+    private Vector3 from = Vector3.zero;
 
     public ReturnToTargetState(Transform transform, GameObject target, Movement movement)
     {
@@ -19,21 +20,26 @@ public class ReturnToTargetState : IState
 
     public void OnEnter()
     {
+        from = _transform.position;
     }
 
     public void OnExit()
     {
+        _movement.ResetMovement();
     }
 
     public void Tick()
     {
         offsetPos = _target.transform.position - _target.transform.forward * 2f + _target.transform.up;
 
-        _movement.Move(_transform.position, offsetPos);
+        _movement.Move(from, offsetPos);
     }
 
     public void DrawDebugGizmo()
     {
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(from, offsetPos);
+
         Gizmos.color = Color.blue;
         Gizmos.DrawLine(_transform.position, offsetPos);
     }
