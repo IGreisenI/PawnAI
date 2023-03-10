@@ -193,10 +193,98 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   model: {fileID: 3708688025779035092}
-  flyerSpeed: 1
-  flyerRotation: 30
-  noiseFrequency: 0.5
-  noiseMagnitude: 0.5
+  flyerPawnMovement:
+    flyerTransform: {fileID: 8544385115421890508}
+    _rotationSpeed: 1
+    animationDuration: 5
+    bobbingFrequency: 1.5
+    bobbingAmplitude: 0.05
+    speed: 2
+    avoidDistance: 2
+    speedFalloff:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: -0.0018119812
+        value: 0.06188965
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.024841448
+        value: 0.16449028
+        inSlope: 5.816144
+        outSlope: 5.816144
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.9346929
+        outWeight: 0.06584597
+      - serializedVersion: 3
+        time: 0.50043285
+        value: 0.99991703
+        inSlope: 0.024756098
+        outSlope: 0.024756098
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.9766136
+        value: 0.17917746
+        inSlope: -5.5138607
+        outSlope: -5.5138607
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.056627683
+        outWeight: 0.76037955
+      - serializedVersion: 3
+        time: 0.9999609
+        value: 0.10315244
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    rotationCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0.0018196106
+        value: 0.004696099
+        inSlope: 0.15595348
+        outSlope: 0.15595348
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.10047718
+      - serializedVersion: 3
+        time: 0.8507596
+        value: 1.070353
+        inSlope: 3.9581232
+        outSlope: 3.9581232
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.053703755
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0.99999905
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   idleTime: 3
   flyForEffectTime: 5
   returnTarget: {fileID: 0}
