@@ -8,10 +8,7 @@ public class PawnSingleFlyer : MonoBehaviour
     [SerializeField] private Transform model;
 
     [Header("Flight settings")]
-    [SerializeField] private float flyerSpeed;
-    [SerializeField] private float flyerRotation;
-    [SerializeField] private float noiseFrequency;
-    [SerializeField] private float noiseMagnitude;
+    [SerializeField] private FlyerPawnMovement flyerPawnMovement;
 
     [Header("State settings")]
     [SerializeField] private float idleTime;
@@ -20,7 +17,6 @@ public class PawnSingleFlyer : MonoBehaviour
     [SerializeField] private Transform[] patrolWaypoints;
 
     private StateMachine _stateMachine;
-    private FlyerPawnMovement flyerPawnMovement;
 
     #region STATES
     private IdleState _idle;
@@ -39,7 +35,7 @@ public class PawnSingleFlyer : MonoBehaviour
     {
         _stateMachine = new StateMachine();
 
-        flyerPawnMovement = new FlyerPawnMovement(transform, flyerSpeed, flyerRotation, noiseFrequency, noiseMagnitude);
+        //flyerPawnMovement = new FlyerPawnMovement(transform);
 
         _idle = new IdleState(transform, idleTime);
         _patrol = new PatrolState(transform, model, flyerPawnMovement, patrolWaypoints);
@@ -59,7 +55,6 @@ public class PawnSingleFlyer : MonoBehaviour
 
     public void Update()
     {
-        Debug.Log(returnTarget.transform.position);
         _stateMachine.Tick();
     }
 

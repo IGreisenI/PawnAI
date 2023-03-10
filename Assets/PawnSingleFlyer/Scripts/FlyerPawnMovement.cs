@@ -1,89 +1,91 @@
-using System.Collections;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
+[System.Serializable]
 public class FlyerPawnMovement : Movement
 {
-    private Transform transform;
-    private float _speed;
-    private float _rotationSpeed;
-    private float noiseFrequency;
-    private float noiseMagnitude;
+    [SerializeField] private Transform flyerTransform;
+
+    [SerializeField] private float _rotationSpeed = 1f;
+    [SerializeField] private float animationDuration = 1f;
+    [SerializeField] private float bobbingFrequency = 1f;
+    [SerializeField] private float bobbingAmplitude = 1f;
+    [SerializeField] private float speed = 1f;
+    [SerializeField] private float avoidDistance = 1f;
+    [SerializeField] private AnimationCurve speedFalloff;
+    [SerializeField] private AnimationCurve rotationCurve;
 
     private Vector3 flyerVelocity;
-
-    public float minSpeed = 1f;
-    public float maxSpeed = 5f;
     private float currentSpeed;
-    private float distanceFromObsticale = 2f;
 
     #region CACHE
-    Vector3 direction;
+    private Vector3 direction;
+    private Quaternion startRotation = Quaternion.identity;
     #endregion
 
-    public FlyerPawnMovement(Transform transform, float speed, float rotationSpeed, float noiseFrequency, float noiseMagnitude)
+    public FlyerPawnMovement(Transform transform)
     {
-        this._speed = speed;
-        this._rotationSpeed = rotationSpeed;
+        this.flyerTransform = transform;
 
-        this.transform = transform;
-        this.noiseFrequency = noiseFrequency;
-        this.noiseMagnitude = noiseMagnitude;
-
-        flyerVelocity = transform.forward / _speed;
+        flyerVelocity = transform.forward * speed;
     }
 
     public void DebugGizmo()
     {
+        if (flyerTransform == null || flyerVelocity == null) return;
         Gizmos.color = Color.green;
-        Gizmos.DrawLine(transform.position, transform.position + flyerVelocity.normalized);
+        Gizmos.DrawLine(flyerTransform.position, flyerTransform.position + flyerVelocity.normalized);
     }
 
     public override void Move(Vector3 from, Vector3 to)
     {
-        // Define a curve amount to control the amount of curve towards the target
-        float curveAmount = 0.1f;
-
         // Calculate distance to target
-        float distanceToTarget = Vector3.Distance(transform.position, to);
+        float distanceToTarget = Vector3.Distance(flyerTransform.position, to);
 
-        // Add perlin noise to movement
-        float noise = Mathf.PerlinNoise(Time.time * noiseFrequency, Time.time * noiseFrequency);
+        // Add sine wave to movement
+        float time = Time.time * bobbingFrequency;
+        Vector3 bobbingVector = new Vector3(0.0f, Mathf.Sin(time) * bobbingAmplitude, 0.0f);
 
-        Vector3 noiseVector = GetRandomVector() * noise * noiseMagnitude;
-        direction = Vector3.Lerp(GetForwardDirection(), (to - transform.position).normalized, curveAmount * _rotationSpeed / distanceToTarget);
+        direction = Vector3.Lerp(GetForwardDirection(), (to - flyerTransform.position).normalized, _rotationSpeed / distanceToTarget);
 
         // Speed adjustment
-        currentSpeed = Mathf.Lerp(_speed / 5f , _speed, Mathf.Abs(1 -Mathf.Clamp(Vector3.Distance(transform.position, from + (to-from)/2) / 30f, 0, 1)));
-        flyerVelocity = (direction + noiseVector) * currentSpeed;
+        if (from == flyerTransform.position)
+            currentSpeed = speed;
+        else
+            currentSpeed = speedFalloff.Evaluate(Vector3.Distance(flyerTransform.position, to) / (to - from).magnitude) * speed;
+
+        flyerVelocity = (direction + bobbingVector) * currentSpeed;
 
         // Collision Handling
         DetectCollision();
         StayAwayFromObjects();
 
         // Move towards the target position
-        transform.position += flyerVelocity * Time.deltaTime;
+        flyerTransform.position += flyerVelocity * Time.deltaTime;
 
         // Rotate towards the target position
-        if (direction != Vector3.zero && Vector3.Distance(transform.position, to) > 0.5f)
+        if (direction != Vector3.zero && Vector3.Distance(flyerTransform.position, to) > 0.1f)
         {
-            Quaternion newRotation = Quaternion.Slerp(transform.rotation, GetRotation(), _speed * Time.deltaTime);
-            transform.rotation = newRotation;
+            Vector3 rotationLook = flyerVelocity.normalized;
+            rotationLook.y = Mathf.Clamp(rotationLook.y, -0.1f, 0.1f);
+
+            float normalizedTime = (Time.time % animationDuration) / animationDuration;
+            if(normalizedTime > 0.99f)
+            {
+                startRotation = flyerTransform.rotation;
+            }
+
+            flyerTransform.rotation = Quaternion.Lerp(startRotation, Quaternion.LookRotation(rotationLook), rotationCurve.Evaluate(normalizedTime));
+        }
+        else
+        {
+            startRotation = flyerTransform.rotation;
         }
     }
 
-
     public override void ResetMovement()
     {
-
-    }
-
-    private Vector3 GetRandomVector()
-    {
-        Vector3 randomVector = Random.insideUnitSphere;
-        randomVector.x = 0;
-        randomVector.z = 0;
-        return randomVector.normalized;
+        flyerVelocity = Vector3.zero;
     }
 
     private Vector3 GetForwardDirection()
@@ -103,13 +105,13 @@ public class FlyerPawnMovement : Movement
 
     private bool DetectCollision()
     {
-        Ray ray = new Ray(transform.position, flyerVelocity);
+        Ray ray = new Ray(flyerTransform.position, flyerVelocity);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, flyerVelocity.magnitude))
         {
-            if((hit.point - transform.position).magnitude < distanceFromObsticale)
+            if((hit.point - flyerTransform.position).magnitude < avoidDistance)
             {
-                flyerVelocity += hit.normal * (distanceFromObsticale - (hit.point - transform.position).magnitude);
+                flyerVelocity += hit.normal * (avoidDistance - (hit.point - flyerTransform.position).magnitude);
                 return true;
             }
         }
@@ -119,9 +121,7 @@ public class FlyerPawnMovement : Movement
     private void StayAwayFromObjects()
     {
         // Cast a sphere in front of the AI to detect nearby obstacles
-        float avoidDistance = 5f;
-        float sphereRadius = 3f;
-        Collider[] colliders = Physics.OverlapSphere(transform.position + transform.forward * avoidDistance, sphereRadius);
+        Collider[] colliders = Physics.OverlapSphere(flyerTransform.position + flyerTransform.forward * avoidDistance, avoidDistance * 2);
         if (colliders.Length == 0)
         {
             return;
@@ -132,7 +132,7 @@ public class FlyerPawnMovement : Movement
         foreach (Collider collider in colliders)
         {
             Vector3 obstaclePosition = collider.transform.position;
-            Vector3 toObstacle = obstaclePosition - transform.position;
+            Vector3 toObstacle = obstaclePosition - flyerTransform.position;
             float distance = toObstacle.magnitude;
             if (distance > 0f && distance < avoidDistance)
             {
@@ -143,6 +143,6 @@ public class FlyerPawnMovement : Movement
         }
 
         // Apply the steering force to the velocity vector
-        flyerVelocity += avoidanceForce.normalized * _speed * Time.deltaTime;
+        flyerVelocity += avoidanceForce.normalized * currentSpeed * Time.deltaTime;
     }
 }
