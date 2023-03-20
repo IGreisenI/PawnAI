@@ -8,7 +8,7 @@ public class IdleState : IState
     private float _idleTime; 
     private float _elapsedTime = 0f;
     private float progressbarLength = 1f;
-    private Vector3 healthbarSize = new Vector3(1f,1f);
+    private Vector3 progressbarSize = new Vector3(1f,1f);
 
     public IdleState(Transform transform, float idleTime)
     {
@@ -20,7 +20,7 @@ public class IdleState : IState
     {
         // Update the elapsed time since entering the idle state
         _elapsedTime += Time.deltaTime;
-        _transform.rotation = Quaternion.Slerp(_transform.rotation, Quaternion.identity, Time.deltaTime); ;
+        _transform.rotation = Quaternion.Slerp(_transform.rotation, Quaternion.identity, Time.deltaTime);
     }
 
     public void OnEnter()
@@ -41,14 +41,14 @@ public class IdleState : IState
 
     public void DrawDebugGizmo()
     {
-        Gizmos.DrawWireCube(_transform.position + _transform.up, healthbarSize);
+        Gizmos.DrawWireCube(_transform.position + _transform.up, progressbarSize);
 
         progressbarLength = _elapsedTime / _idleTime;
         if (progressbarLength > 0.66f) Gizmos.color = Color.green;
         else if (progressbarLength > 0.33f) Gizmos.color = Color.yellow;
         else Gizmos.color = Color.red;
 
-        Gizmos.DrawCube(_transform.position + _transform.up + new Vector3((progressbarLength / 2f) - (progressbarLength / 2f), 0, 0), new Vector3(progressbarLength, progressbarLength, healthbarSize.z));
+        Gizmos.DrawCube(_transform.position + _transform.up + new Vector3((progressbarLength / 2f) - (progressbarLength / 2f), 0, 0), new Vector3(progressbarLength, progressbarLength, progressbarSize.z));
     }
 
     public bool IdleTimeExpired()

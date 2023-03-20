@@ -30,6 +30,7 @@ public class ReturnToTargetState : IState
 
     public void Tick()
     {
+        // Calculate the offset position by subtracting twice the forward vector from the target's position and adding its up vector.
         offsetPos = _target.transform.position - _target.transform.forward * 2f + _target.transform.up;
 
         _movement.Move(from, offsetPos);
@@ -46,6 +47,7 @@ public class ReturnToTargetState : IState
 
     public bool ReturnedToTarget()
     {
+        // Return true if the distance between the current position of the transform and the offset position is less than 0.25f
         return Vector3.Distance(_transform.position, offsetPos) < 0.25f;
     }
 }

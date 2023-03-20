@@ -5,7 +5,6 @@ using UnityEngine;
 public class PatrolState : IState
 {
     private Transform _transform;
-    private Transform _model;
     private Transform[] _waypoints;
     private int _currentWaypointIndex;
     private bool _isPatrollingForward;
@@ -14,10 +13,9 @@ public class PatrolState : IState
     private Vector3 _startingPoint;
     private Vector3 from;
 
-    public PatrolState(Transform transform, Transform model, Movement movement, Transform[] waypoints)
+    public PatrolState(Transform transform, Movement movement, Transform[] waypoints)
     {
         _transform = transform;
-        _model = model;
         _waypoints = waypoints;
 
         _movement = movement;
