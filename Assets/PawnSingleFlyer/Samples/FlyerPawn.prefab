@@ -125,7 +125,7 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8332385158808532598}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
@@ -176,7 +176,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 0
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -195,97 +195,10 @@ MonoBehaviour:
   model: {fileID: 3708688025779035092}
   flyerPawnMovement:
     flyerTransform: {fileID: 8544385115421890508}
-    _rotationSpeed: 1
-    animationDuration: 5
-    bobbingFrequency: 1.5
-    bobbingAmplitude: 0.05
-    speed: 2
-    avoidDistance: 2
-    speedFalloff:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: -0.0018119812
-        value: 0.06188965
-        inSlope: 2
-        outSlope: 2
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 0.024841448
-        value: 0.16449028
-        inSlope: 5.816144
-        outSlope: 5.816144
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.9346929
-        outWeight: 0.06584597
-      - serializedVersion: 3
-        time: 0.50043285
-        value: 0.99991703
-        inSlope: 0.024756098
-        outSlope: 0.024756098
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.9766136
-        value: 0.17917746
-        inSlope: -5.5138607
-        outSlope: -5.5138607
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.056627683
-        outWeight: 0.76037955
-      - serializedVersion: 3
-        time: 0.9999609
-        value: 0.10315244
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    rotationCurve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0.0018196106
-        value: 0.004696099
-        inSlope: 0.15595348
-        outSlope: 0.15595348
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0.10047718
-      - serializedVersion: 3
-        time: 0.8507596
-        value: 1.070353
-        inSlope: 3.9581232
-        outSlope: 3.9581232
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.053703755
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 1
-        value: 0.99999905
-        inSlope: 2
-        outSlope: 2
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
+    flyerSettings: {fileID: 11400000, guid: 5f81e9208a1a82d478472f6f5b9fd08b, type: 2}
+    navMeshDatas: []
   idleTime: 3
+  playTime: 5
   flyForEffectTime: 5
   returnTarget: {fileID: 0}
   patrolWaypoints:
@@ -293,6 +206,8 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  focusSpeed: 1
+  focusRadius: 5
 --- !u!1 &8544385116203034602
 GameObject:
   m_ObjectHideFlags: 0
@@ -304,7 +219,6 @@ GameObject:
   - component: {fileID: 8544385116203034601}
   - component: {fileID: 8544385116203034606}
   - component: {fileID: 8544385116203034607}
-  - component: {fileID: 8544385116203034600}
   m_Layer: 0
   m_Name: Gun
   m_TagString: Untagged
@@ -377,20 +291,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &8544385116203034600
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8544385116203034602}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
 --- !u!1 &8544385116407584282
 GameObject:
   m_ObjectHideFlags: 0
@@ -402,7 +302,6 @@ GameObject:
   - component: {fileID: 8544385116407584281}
   - component: {fileID: 8544385116407584286}
   - component: {fileID: 8544385116407584287}
-  - component: {fileID: 8544385116407584280}
   m_Layer: 0
   m_Name: Gun
   m_TagString: Untagged
@@ -475,20 +374,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &8544385116407584280
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8544385116407584282}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
 --- !u!1 &8544385116539649414
 GameObject:
   m_ObjectHideFlags: 0
@@ -500,7 +385,6 @@ GameObject:
   - component: {fileID: 8544385116539649413}
   - component: {fileID: 8544385116539649434}
   - component: {fileID: 8544385116539649435}
-  - component: {fileID: 8544385116539649412}
   m_Layer: 0
   m_Name: Gun
   m_TagString: Untagged
@@ -573,20 +457,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &8544385116539649412
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8544385116539649414}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
 --- !u!1 &8544385117125714945
 GameObject:
   m_ObjectHideFlags: 0
@@ -633,7 +503,6 @@ GameObject:
   - component: {fileID: 8544385117347493449}
   - component: {fileID: 8544385117347493454}
   - component: {fileID: 8544385117347493455}
-  - component: {fileID: 8544385117347493448}
   m_Layer: 0
   m_Name: Gun
   m_TagString: Untagged
@@ -706,17 +575,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &8544385117347493448
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8544385117347493450}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
