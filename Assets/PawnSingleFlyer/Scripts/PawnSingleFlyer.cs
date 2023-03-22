@@ -49,7 +49,7 @@ public class PawnSingleFlyer : MonoBehaviour
     private void Start()
     {
         // Initialize the movement navmesh script
-        flyerPawnMovement.NavMeshInit();
+        flyerPawnMovement.Init();
 
         _stateMachine = new StateMachine();
 
@@ -74,6 +74,7 @@ public class PawnSingleFlyer : MonoBehaviour
 
     public void Update()
     {
+        flyerPawnMovement.Noise();
         _stateMachine.Tick();
     }
 

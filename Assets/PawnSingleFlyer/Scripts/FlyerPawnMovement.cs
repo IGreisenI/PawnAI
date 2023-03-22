@@ -8,6 +8,8 @@ public class FlyerPawnMovement : Movement
 {
     [Tooltip("Parent Transform of object that is moved")]
     [SerializeField] public Transform flyerTransform;
+    [Tooltip("Parent Transform of object that is moved")]
+    [SerializeField] public Transform flyerModel;
     [Tooltip("Scriptable object that are the movement settings")]
     [SerializeField] FlyerSettings flyerSettings;
 
@@ -21,10 +23,11 @@ public class FlyerPawnMovement : Movement
     private Vector3 flyerVelocity;
     private float currentSpeed;
 
+    private Quaternion startRotation = Quaternion.identity;
+    private Quaternion endModelRotation = Quaternion.identity;
     // Caching frequently-used values for performance
     #region CACHE
     private Vector3 direction;
-    private Quaternion startRotation = Quaternion.identity;
     private Vector3 avoidanceForce;
 
     float distanceToTarget;
@@ -32,11 +35,13 @@ public class FlyerPawnMovement : Movement
     float normalizedTime;
     float clampedXRotation;
     Vector3 bobbingVector;
-    Vector3 currentRotation;
+    Vector3 lookAtRotation;
     #endregion
 
-    public void NavMeshInit()
+    public void Init()
     {
+        currentSpeed = flyerSettings.speedFalloff.Evaluate(0);
+
         // Create a new NavMeshData instance for each NavMeshData in the data list
         foreach (NavMeshData navMeshData in navMeshDatas)
         {
@@ -67,15 +72,25 @@ public class FlyerPawnMovement : Movement
         }
     }
 
+    public override void Noise()
+    {
+        // Add sine wave to movement
+        time = Time.time * flyerSettings.bobbingFrequency;
+        bobbingVector = new Vector3(0.0f, Mathf.Sin(time) * flyerSettings.bobbingAmplitude, 0.0f);
+        flyerTransform.position += bobbingVector / currentSpeed * Time.deltaTime;
+    }
+
     public override void Move(Vector3 from, Vector3 to)
     {
+        float distanceFromTo = Vector3.Distance(from, to);
+
         // If there is a collision and the current corner index is less than the number of corners in the NavMeshPath, adjust the from and to positions
         if (DetectCollision(flyerTransform.position, to) && currentCornerIndex < navMeshPath.corners.Length)
         {
             from = flyerTransform.position;
             to = navMeshPath.corners[currentCornerIndex] + new Vector3(0f, from.y);
 
-            if(Vector3.Distance(from, to) < 0.1f)
+            if(distanceFromTo < 0.1f)
             {
                 currentCornerIndex++;
             }
@@ -89,17 +104,12 @@ public class FlyerPawnMovement : Movement
         // Calculate distance to target
         distanceToTarget = Vector3.Distance(flyerTransform.position, to);
 
-        // Add sine wave to movement
-        time = Time.time * flyerSettings.bobbingFrequency;
-        bobbingVector = new Vector3(0.0f, Mathf.Sin(time) * flyerSettings.bobbingAmplitude, 0.0f);
-
         direction = Vector3.Lerp(GetForwardDirection(), (to - flyerTransform.position).normalized, flyerSettings._rotationSpeed / distanceToTarget).normalized;
 
         // Speed adjustment
-        if (from == flyerTransform.position)
-            currentSpeed = flyerSettings.speed;
-        else
-            currentSpeed = flyerSettings.speedFalloff.Evaluate(Vector3.Distance(flyerTransform.position, to) / (to - from).magnitude) * flyerSettings.speed;
+        
+        currentSpeed = flyerSettings.speedFalloff.Evaluate(Vector3.Distance(flyerTransform.position, to) / distanceFromTo) * flyerSettings.speed;
+        if (currentSpeed == float.NaN) currentSpeed = flyerSettings.speedFalloff.Evaluate(0);
 
         flyerVelocity = direction * currentSpeed + bobbingVector / currentSpeed;
 
@@ -109,25 +119,30 @@ public class FlyerPawnMovement : Movement
         flyerTransform.position += flyerVelocity * Time.deltaTime;
 
         // Rotate towards the target position
-        if (direction != Vector3.zero && Vector3.Distance(flyerTransform.position, to) > 0.1f)
+        if (direction != Vector3.zero && Vector3.Distance(flyerTransform.position, to) > 0.05f)
         {
             normalizedTime = ((Time.time) % flyerSettings.rotationDuration) / flyerSettings.rotationDuration;
             if(normalizedTime > 0.99f)
             {
                 startRotation = flyerTransform.rotation;
+
             }
+            lookAtRotation = Quaternion.LookRotation(flyerVelocity.normalized).eulerAngles;
 
-            currentRotation = Quaternion.Lerp(startRotation, Quaternion.LookRotation(flyerVelocity.normalized), flyerSettings.rotationCurve.Evaluate(normalizedTime)).eulerAngles;
-
-            clampedXRotation = currentRotation.x > 180 ? currentRotation.x - 360 : currentRotation.x;
+            clampedXRotation = lookAtRotation.x > 180 ? lookAtRotation.x - 360 : lookAtRotation.x;
             clampedXRotation = Mathf.Clamp(clampedXRotation, -flyerSettings.clampedXAngle, flyerSettings.clampedXAngle);
 
             // Set the new rotation of the object
-            flyerTransform.rotation = Quaternion.Lerp(startRotation, Quaternion.Euler(clampedXRotation, currentRotation.y, currentRotation.z), flyerSettings.rotationCurve.Evaluate(normalizedTime));
+            flyerTransform.rotation = Quaternion.Lerp(startRotation, Quaternion.Euler(clampedXRotation, lookAtRotation.y, lookAtRotation.z), flyerSettings.rotationCurve.Evaluate(normalizedTime));
         }
         else
         {
             startRotation = flyerTransform.rotation;
+        }
+
+        if (endModelRotation != Quaternion.identity)
+        {
+            flyerModel.rotation = Quaternion.Lerp(flyerModel.rotation, endModelRotation, flyerSettings.rotationCurve.Evaluate(normalizedTime) * flyerSettings._rotationSpeed);
         }
     }
 
@@ -201,4 +216,12 @@ public class FlyerPawnMovement : Movement
         flyerVelocity = Vector3.zero;
     }
 
+    public override void LookAt(Vector3 at)
+    {
+        endModelRotation = Quaternion.LookRotation((at - flyerTransform.position).normalized); 
+        if (endModelRotation != Quaternion.identity)
+        {
+            flyerModel.rotation = Quaternion.Lerp(flyerModel.rotation, endModelRotation, flyerSettings.rotationCurve.Evaluate(normalizedTime) * flyerSettings._rotationSpeed);
+        }
+    }
 }

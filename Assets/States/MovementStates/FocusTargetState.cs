@@ -45,7 +45,7 @@ public class FocusTargetState : IState
             randomPositionAroundTarget = FindNewPointOnSphere(randomPositionAroundTarget);
         }
         _movement.Move(_transform.position, _target.position + randomPositionAroundTarget);
-        _model.LookAt(_target);
+        _movement.LookAt(_target.position);
     }
 
 

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f17cab748b7724049b056c8169a8f385, type: 3}
   m_Name: FlyerSettings
   m_EditorClassIdentifier: 
-  speed: 4
+  speed: 1
   speedFalloff:
     serializedVersion: 2
     m_Curve:
@@ -26,8 +26,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0.40302175
     - serializedVersion: 3
-      time: 0.030887328
-      value: 0.5060815
+      time: 0.0124561265
+      value: 0.49570733
       inSlope: 10.327673
       outSlope: 10.327673
       tangentMode: 0
@@ -35,8 +35,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.054712974
-      value: 0.6960272
+      time: 0.036281772
+      value: 0.68565303
       inSlope: 6.3098054
       outSlope: 6.3098054
       tangentMode: 0
@@ -44,8 +44,8 @@ MonoBehaviour:
       inWeight: 0.25459096
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.10314306
-      value: 0.8297758
+      time: 0.08471186
+      value: 0.8194016
       inSlope: 1.3561609
       outSlope: 1.3561609
       tangentMode: 0
@@ -62,8 +62,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.12234184
     - serializedVersion: 3
-      time: 0.90214264
-      value: 0.8209369
+      time: 0.9132014
+      value: 0.8140208
       inSlope: -1.6243625
       outSlope: -1.6243625
       tangentMode: 0
@@ -71,8 +71,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 1
     - serializedVersion: 3
-      time: 0.9454656
-      value: 0.6987769
+      time: 0.9565244
+      value: 0.6918608
       inSlope: -6.372505
       outSlope: -6.372505
       tangentMode: 0
@@ -80,8 +80,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.35160342
     - serializedVersion: 3
-      time: 0.9723617
-      value: 0.5224551
+      time: 0.98342043
+      value: 0.515539
       inSlope: -7.161709
       outSlope: -7.161709
       tangentMode: 0
@@ -108,10 +108,10 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0
       inSlope: 0
       outSlope: 0
-      tangentMode: 34
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0
       outWeight: 0
@@ -120,7 +120,7 @@ MonoBehaviour:
       value: 1
       inSlope: 0
       outSlope: 0
-      tangentMode: 34
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0
       outWeight: 0
