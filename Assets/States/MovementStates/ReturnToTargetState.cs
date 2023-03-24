@@ -25,7 +25,6 @@ public class ReturnToTargetState : IState
 
     public void OnExit()
     {
-        _movement.ResetMovement();
     }
 
     public void Tick()

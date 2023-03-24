@@ -62,14 +62,14 @@ public class PawnSingleFlyer : MonoBehaviour
 
 
         // Add transitions between states
-        At(_idle, _idlePlay, _idle.IdleTimeExpired);
+        At(_idle, _flyForEffect, _idle.IdleTimeExpired);
         At(_idlePlay, _patrol, () => _idlePlay.FinishedPlaying());
         At(_patrol, _flyForEffect, _patrol.PatrolFinished);
         At(_flyForEffect, _returnToTarget, _flyForEffect.FlightTimeExpired);
         At(_returnToTarget, _idle, _returnToTarget.ReturnedToTarget);
 
         // Set the initial state to idle
-        _stateMachine.SetState(_idle);
+        _stateMachine.SetState(_flyForEffect);
     }
 
     public void Update()

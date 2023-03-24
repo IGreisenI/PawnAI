@@ -27,7 +27,7 @@ public class FocusTargetState : IState
 
     public void OnEnter()
     {
-        randomPositionAroundTarget = FindNewPointOnSphere(Random.onUnitSphere * _focusRadius);
+        randomPositionAroundTarget = FindNewPointOnSphere(Random.onUnitSphere * _focusRadius, 1);
         prevSpeed = _movement.GetSpeed(); // store the previous speed
         _movement.ChangeSpeed(_focusSpeed); // change the speed to the focus speed
     }
@@ -39,11 +39,20 @@ public class FocusTargetState : IState
 
     public void Tick()
     {
+        // Check point in case it's obstructed, if it is find new one
+
+        if (IsObstructedPoint(randomPositionAroundTarget))
+        {
+            randomPositionAroundTarget = FindNewPointOnSphere(randomPositionAroundTarget, 1);
+        }
+
         if (Vector3.Distance(_transform.position, _target.position + randomPositionAroundTarget) <= 0.5f)
         {
             // Find next point on the sphere that is 0f-2f distance from last point
-            randomPositionAroundTarget = FindNewPointOnSphere(randomPositionAroundTarget);
+            randomPositionAroundTarget = FindNewPointOnSphere(randomPositionAroundTarget, 1);
+            _movement.ReachedDestination();
         }
+
         _movement.Move(_transform.position, _target.position + randomPositionAroundTarget);
         _movement.LookAt(_target.position);
     }
@@ -72,14 +81,19 @@ public class FocusTargetState : IState
 
         Vector3 newPoint = (prevPoint + Random.onUnitSphere * 2f).normalized * _focusRadius;
 
-        Ray ray = new Ray(_transform.position, (_target.position + newPoint - _transform.position).normalized);
-        RaycastHit hit;
-
         // If point is obstructed or inaccessible we try to find the point again
-        if (Physics.Raycast(ray, out hit, (_target.position + newPoint - _transform.position).magnitude) || Physics.CheckSphere(_target.position + newPoint, 1f))
+        if (IsObstructedPoint(newPoint))
         {
-            return FindNewPointOnSphere(prevPoint, maxAttempts - 1);
+            return FindNewPointOnSphere(newPoint, maxAttempts - 1);
         }
         return newPoint;
+    }
+
+    private bool IsObstructedPoint(Vector3 point)
+    {
+        Ray ray = new Ray(_target.position, ((point + _target.position) - _target.position).normalized);
+        RaycastHit hit;
+
+        return Physics.Raycast(ray, out hit, ((point + _target.position) - _target.position).magnitude) || Physics.CheckSphere(_target.position + point, 1f);
     }
 }

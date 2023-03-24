@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -32,7 +33,9 @@ public class FlyerPawnMovement : Movement
 
     float distanceToTarget;
     float time;
-    float normalizedTime;
+    float normalizedRotTime = 0f;
+    float normalizedAccTime = 0f;
+    float accTime = 0f;
     float clampedXRotation;
     Vector3 bobbingVector;
     Vector3 lookAtRotation;
@@ -40,7 +43,7 @@ public class FlyerPawnMovement : Movement
 
     public void Init()
     {
-        currentSpeed = flyerSettings.speedFalloff.Evaluate(0);
+        currentSpeed = flyerSettings.speedDeceleration.Evaluate(0);
 
         // Create a new NavMeshData instance for each NavMeshData in the data list
         foreach (NavMeshData navMeshData in navMeshDatas)
@@ -62,7 +65,7 @@ public class FlyerPawnMovement : Movement
         Gizmos.DrawLine(flyerTransform.position, flyerTransform.position + avoidanceForce * currentSpeed);
 
         Gizmos.color = Color.white;
-        Gizmos.DrawWireSphere(flyerTransform.position + flyerTransform.forward, flyerSettings.avoidDistance);
+        Gizmos.DrawWireSphere(flyerTransform.position + flyerVelocity.normalized, flyerSettings.avoidDistance);
 
         if (navMeshPath == null) return;
         foreach(Vector3 pos in navMeshPath.corners)
@@ -82,7 +85,13 @@ public class FlyerPawnMovement : Movement
 
     public override void Move(Vector3 from, Vector3 to)
     {
+
+
+
         float distanceFromTo = Vector3.Distance(from, to);
+        distanceToTarget = Vector3.Distance(flyerTransform.position, to);
+
+        if (distanceToTarget < 0.01f) ReachedDestination();
 
         // If there is a collision and the current corner index is less than the number of corners in the NavMeshPath, adjust the from and to positions
         if (DetectCollision(flyerTransform.position, to) && currentCornerIndex < navMeshPath.corners.Length)
@@ -102,18 +111,28 @@ public class FlyerPawnMovement : Movement
         }
 
         // Calculate distance to target
-        distanceToTarget = Vector3.Distance(flyerTransform.position, to);
-
         direction = Vector3.Lerp(GetForwardDirection(), (to - flyerTransform.position).normalized, flyerSettings._rotationSpeed / distanceToTarget).normalized;
 
         // Speed adjustment
-        
-        currentSpeed = flyerSettings.speedFalloff.Evaluate(Vector3.Distance(flyerTransform.position, to) / distanceFromTo) * flyerSettings.speed;
-        if (currentSpeed == float.NaN) currentSpeed = flyerSettings.speedFalloff.Evaluate(0);
+
+        if (distanceToTarget < distanceFromTo / 2)
+        {
+            if(accTime > 0f) accTime -= Time.deltaTime;
+            normalizedAccTime -= (accTime % flyerSettings.accelerationTime) / flyerSettings.accelerationTime;
+            currentSpeed = flyerSettings.speedDeceleration.Evaluate(1f - distanceToTarget / (distanceFromTo / 2)) * flyerSettings.speed;
+        }
+        else
+        {
+            accTime += Time.deltaTime;
+            if (normalizedAccTime < 0.95f)
+                normalizedAccTime = (accTime % flyerSettings.accelerationTime) / flyerSettings.accelerationTime;
+            currentSpeed = flyerSettings.speedAcceleration.Evaluate(normalizedAccTime) * flyerSettings.speed;
+        }
 
         flyerVelocity = direction * currentSpeed + bobbingVector / currentSpeed;
+        Debug.Log(currentSpeed);
 
-        StayAwayFromObjects();
+        StayAwayFromObjects();  
 
         // Move towards the target position
         flyerTransform.position += flyerVelocity * Time.deltaTime;
@@ -121,10 +140,10 @@ public class FlyerPawnMovement : Movement
         // Rotate towards the target position
         if (direction != Vector3.zero && Vector3.Distance(flyerTransform.position, to) > 0.05f)
         {
-            normalizedTime = ((Time.time) % flyerSettings.rotationDuration) / flyerSettings.rotationDuration;
-            if(normalizedTime > 0.99f)
+            normalizedRotTime = (Time.time % flyerSettings.rotationDuration) / flyerSettings.rotationDuration;
+            if(normalizedRotTime > 0.99f)
             {
-                startRotation = flyerTransform.rotation;
+                startRotation = flyerModel.rotation;
 
             }
             lookAtRotation = Quaternion.LookRotation(flyerVelocity.normalized).eulerAngles;
@@ -133,7 +152,7 @@ public class FlyerPawnMovement : Movement
             clampedXRotation = Mathf.Clamp(clampedXRotation, -flyerSettings.clampedXAngle, flyerSettings.clampedXAngle);
 
             // Set the new rotation of the object
-            flyerTransform.rotation = Quaternion.Lerp(startRotation, Quaternion.Euler(clampedXRotation, lookAtRotation.y, lookAtRotation.z), flyerSettings.rotationCurve.Evaluate(normalizedTime));
+            flyerModel.rotation = Quaternion.Lerp(startRotation, Quaternion.Euler(clampedXRotation, lookAtRotation.y, lookAtRotation.z), flyerSettings.rotationCurve.Evaluate(normalizedRotTime));
         }
         else
         {
@@ -142,7 +161,7 @@ public class FlyerPawnMovement : Movement
 
         if (endModelRotation != Quaternion.identity)
         {
-            flyerModel.rotation = Quaternion.Lerp(flyerModel.rotation, endModelRotation, flyerSettings.rotationCurve.Evaluate(normalizedTime) * flyerSettings._rotationSpeed);
+            flyerModel.rotation = Quaternion.Lerp(flyerModel.rotation, endModelRotation, flyerSettings.rotationCurve.Evaluate(normalizedRotTime) * flyerSettings._rotationSpeed);
         }
     }
 
@@ -174,7 +193,7 @@ public class FlyerPawnMovement : Movement
     private void StayAwayFromObjects()
     {
         // Cast a sphere in front of the AI to detect nearby obstacles
-        Collider[] colliders = Physics.OverlapSphere(flyerTransform.position + flyerTransform.forward, flyerSettings.avoidDistance);
+        Collider[] colliders = Physics.OverlapSphere(flyerTransform.position + flyerVelocity.normalized, flyerSettings.avoidDistance);
         if (colliders.Length == 0)
         {
             return;
@@ -214,6 +233,12 @@ public class FlyerPawnMovement : Movement
     public override void ResetMovement()
     {
         flyerVelocity = Vector3.zero;
+        normalizedAccTime = 0f;
+    }
+
+    public override void ReachedDestination()
+    {
+        normalizedAccTime = 0f;
     }
 
     public override void LookAt(Vector3 at)
@@ -221,7 +246,7 @@ public class FlyerPawnMovement : Movement
         endModelRotation = Quaternion.LookRotation((at - flyerTransform.position).normalized); 
         if (endModelRotation != Quaternion.identity)
         {
-            flyerModel.rotation = Quaternion.Lerp(flyerModel.rotation, endModelRotation, flyerSettings.rotationCurve.Evaluate(normalizedTime) * flyerSettings._rotationSpeed);
+            flyerModel.rotation = Quaternion.Lerp(flyerModel.rotation, endModelRotation, flyerSettings.rotationCurve.Evaluate(normalizedRotTime) * flyerSettings._rotationSpeed * 0.1f);
         }
     }
 }

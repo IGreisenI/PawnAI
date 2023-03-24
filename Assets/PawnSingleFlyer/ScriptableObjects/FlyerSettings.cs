@@ -8,8 +8,12 @@ public class FlyerSettings : ScriptableObject
     [Header("Speed")]
     [Tooltip("Maximum speed of the flyer")]
     [SerializeField] public float speed = 1f;
+    [Tooltip("Acceleration time")]
+    [SerializeField] public float accelerationTime = 1f;
+    [Tooltip("Speed acceleration over time")]
+    [SerializeField] public AnimationCurve speedAcceleration;
     [Tooltip("Speed curve over distance from point to point")]
-    [SerializeField] public AnimationCurve speedFalloff;
+    [SerializeField] public AnimationCurve speedDeceleration;
 
     [Header("Rotation")]
     [Tooltip("Rotation speed of the flyer")]

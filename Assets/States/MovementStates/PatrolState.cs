@@ -34,6 +34,7 @@ public class PatrolState : IState
         float distanceToWaypoint = Vector3.Distance(_transform.position, _waypoints[_currentWaypointIndex].position);
         if (distanceToWaypoint <= 0.5f)
         {
+            _movement.ReachedDestination();
             // If the AI has reached the current waypoint, switch to the next waypoint
             if (_isPatrollingForward)
             {

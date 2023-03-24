@@ -4220,11 +4220,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 580369315}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!4 &588240679 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3708688025779035092, guid: bb553829a3e570543943f3653c3cc132, type: 3}
-  m_PrefabInstance: {fileID: 8544385115321376907}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &609400270
 GameObject:
   m_ObjectHideFlags: 0
@@ -12952,7 +12947,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8544385115421890499, guid: bb553829a3e570543943f3653c3cc132, type: 3}
       propertyPath: idleTime
-      value: 30
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8544385115421890499, guid: bb553829a3e570543943f3653c3cc132, type: 3}
       propertyPath: flyerSpeed
@@ -12960,7 +12955,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8544385115421890499, guid: bb553829a3e570543943f3653c3cc132, type: 3}
       propertyPath: focusSpeed
-      value: 4
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8544385115421890499, guid: bb553829a3e570543943f3653c3cc132, type: 3}
       propertyPath: partrolSpeed
@@ -12994,10 +12989,6 @@ PrefabInstance:
       propertyPath: flyerPawnMovement.minSpeed
       value: 0.1
       objectReference: {fileID: 0}
-    - target: {fileID: 8544385115421890499, guid: bb553829a3e570543943f3653c3cc132, type: 3}
-      propertyPath: flyerPawnMovement.flyerModel
-      value: 
-      objectReference: {fileID: 588240679}
     - target: {fileID: 8544385115421890499, guid: bb553829a3e570543943f3653c3cc132, type: 3}
       propertyPath: patrolWaypoints.Array.data[0]
       value: 
@@ -13235,4 +13226,5 @@ PrefabInstance:
     - {fileID: 8544385117347493448, guid: bb553829a3e570543943f3653c3cc132, type: 3}
     - {fileID: 8544385116539649412, guid: bb553829a3e570543943f3653c3cc132, type: 3}
     - {fileID: 8544385116407584280, guid: bb553829a3e570543943f3653c3cc132, type: 3}
+    - {fileID: 542691372711395227, guid: bb553829a3e570543943f3653c3cc132, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: bb553829a3e570543943f3653c3cc132, type: 3}

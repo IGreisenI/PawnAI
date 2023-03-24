@@ -195,6 +195,7 @@ MonoBehaviour:
   model: {fileID: 3708688025779035092}
   flyerPawnMovement:
     flyerTransform: {fileID: 8544385115421890508}
+    flyerModel: {fileID: 3708688025779035092}
     flyerSettings: {fileID: 11400000, guid: 5f81e9208a1a82d478472f6f5b9fd08b, type: 2}
     navMeshDatas: []
   idleTime: 3
@@ -206,7 +207,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  focusSpeed: 1
+  focusSpeed: 4
   focusRadius: 5
 --- !u!1 &8544385116203034602
 GameObject:

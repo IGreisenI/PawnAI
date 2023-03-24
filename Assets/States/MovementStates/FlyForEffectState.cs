@@ -41,8 +41,7 @@ public class FlyForEffectState : IState
 
         _targetOffset = _target.position + _target.forward * 2f + _target.up;
 
-        if(Vector3.Distance(from, _targetOffset) > 0.05f)
-            _movement.Move(from, _targetOffset);
+        _movement.Move(from, _targetOffset);
 
         if (_focusTarget != null)
         {
