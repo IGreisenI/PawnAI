@@ -45,6 +45,7 @@ Otherwise the movement is achieved by concept of velocity which is calculated by
 ### Idle State->Idle Play where drone spins->Patrol
 
 This example also shows the movement and collision detection/clearing
+
 https://github.com/IGreisenI/PawnAI/assets/58489283/1f19e5bb-6ed4-42f6-80bf-60d0a760cf1a
 
 ### Idle State->Focus on Target (It's focusing the bean)
