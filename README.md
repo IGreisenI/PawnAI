@@ -5,12 +5,13 @@ Small project for a flying drone that doesn't use navmesh agent but does utilise
 
 ## State Machine
 Drone operates on a statemachine with current implemented states being:
- - IdleState
- - IdlePlayState
- - PatrolState
- - ReturnToTargetState
- - FocusTargetState
- - FlyForEffectState
+ - IdleState: The drone remains idle for a specified duration.
+ - IdlePlayState: The drone idles with some play actions for a specified duration.
+ - PatrolState: The drone patrols through a series of waypoints.
+ - ReturnToTargetState: The drone returns to a specified target.
+ - FocusTargetState: The drone focuses on a specified target.
+ - FlyForEffectState: The drone flies for a specified effect duration.
+
 
 ## Flying movement
 
