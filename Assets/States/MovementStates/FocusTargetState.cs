@@ -54,7 +54,7 @@ public class FocusTargetState : IState
         }
 
         _movement.Move(_transform.position, _target.position + randomPositionAroundTarget);
-        _movement.LookAt(_target.position);
+        _model.LookAt(_target.position);
     }
 
 

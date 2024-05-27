@@ -27,6 +27,7 @@ public class PawnSingleFlyer : MonoBehaviour
     [Header("Focus State", order = 1)]
     [SerializeField] private float focusSpeed = 1f;
     [SerializeField] private float focusRadius = 5f;
+    [SerializeField] private Transform focusTarget;
 
     // The state machine controlling the pawn's behavior
     private StateMachine _stateMachine;
@@ -57,19 +58,19 @@ public class PawnSingleFlyer : MonoBehaviour
         _idlePlay = new IdlePlayState(transform, playTime, model);
         _patrol = new PatrolState(transform, flyerPawnMovement, patrolWaypoints);
         _returnToTarget = new ReturnToTargetState(transform, returnTarget.gameObject, flyerPawnMovement);
-        _focusOnTarget = new FocusTargetState(transform, model, returnTarget.transform, flyerPawnMovement, focusSpeed, focusRadius);
+        _focusOnTarget = new FocusTargetState(transform, model, focusTarget, flyerPawnMovement, focusSpeed, focusRadius);
         _flyForEffect = new FlyForEffectState(transform, model, returnTarget.transform, null, flyerPawnMovement, flyForEffectTime);
 
 
         // Add transitions between states
-        At(_idle, _flyForEffect, _idle.IdleTimeExpired);
+        At(_idle, _focusOnTarget, _idle.IdleTimeExpired);
         At(_idlePlay, _patrol, () => _idlePlay.FinishedPlaying());
         At(_patrol, _flyForEffect, _patrol.PatrolFinished);
         At(_flyForEffect, _returnToTarget, _flyForEffect.FlightTimeExpired);
         At(_returnToTarget, _idle, _returnToTarget.ReturnedToTarget);
 
         // Set the initial state to idle
-        _stateMachine.SetState(_flyForEffect);
+        _stateMachine.SetState(_idle);
     }
 
     public void Update()
